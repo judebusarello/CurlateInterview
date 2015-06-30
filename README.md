@@ -18,6 +18,7 @@ See figures A-D below for an example iteration of the game.
 
 "Solving" the puzzle simply involves connecting the dots by drawing lines between them.  Each dot should be connected to exactly two other dots.  If there are N dots, you should draw N lines to solve the puzzle.  The lines should NOT intersect (see figures E and F).  Note that there may be multiple correct solutions for any given puzzle.
 
+<pre>
 +------------------+   +------------------+   +------------------+   +------------------+
 |                  |   |                  |   |                  |   |                  |
 |                  |   |   *              |   |   *    *      *  |   |   *    *------*  |
@@ -27,7 +28,7 @@ See figures A-D below for an example iteration of the game.
 |                  |   |                  |   |                  |   |   |           |  |
 |                  |   |                  |   |   *           *  |   |   *-----------*  |
 |                  |   |                  |   |                  |   |                  |
-|    <Solve Me>    |   |    <Solve Me>    |   |    <Solve Me>    |   |      <Reset>     |
+|    [Solve Me]    |   |    [Solve Me]    |   |    [Solve Me]    |   |      [Reset]     |
 +------------------+   +------------------+   +------------------+   +------------------+
   A. App on load.        B. After 1 click.     C. After 6 clicks.      D. After solving.
 
@@ -44,6 +45,7 @@ See figures A-D below for an example iteration of the game.
 |    *--------*    |   |    *--------*    |
 +------------------+   +------------------+
  E. Invalid Sol'n.       F. Valid sol'n.
+</pre>
 
 Tips
 ====

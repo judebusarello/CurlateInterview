@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Picasso Constellation</title>
+    <script type="text/javascript" src="./dist/paper-full.min.js"></script>
+    <script type="text/paperscript" canvas="canvas">
+
+
+	document.getElementById('solve').style.display = 'block';
+    var fullPath = new Path();
+	fullPath.strokeColor = 'white';
+    fullPath.closed = true;
+	fullPath.visible = false;
+
+	function onMouseUp(event){
+		point = new Path.Circle(event.point,3);
+		point.fillColor = 'white';
+	    addVertex(fullPath, event.point);
+	}
+
+	function addVertex(currentPath, vertex){
+		//Add a vertex to our frankensteing polygon.
+		//Basically, we go through all the line segments in the path and whichever one has the closest point to the vertex wins.
+		//When a vertex is equally close to 2 segments, we need a tie breaker.
+		//TIE BREAKER: look at the angle produced by integrating it into that part of the path and choose the biggest one.
+		//This ensures we use correct segment. (imagine looking at the segments from the perspective of the new vertex)
+		var shortestDistance = Infinity;
+		var shortestDistanceIndex = -1;
+		fullPath.segments.forEach(function(currentSegment){
+			var currentDistance;
+			currentDistance = distanceToSegmentSquared(vertex, currentSegment.point, currentSegment.next.point);
+			if(currentDistance == shortestDistance){
+				var currentAngle = getAngle(currentSegment.next.point, vertex, currentSegment.point);
+				var otherAngle = getAngle(fullPath.segments[shortestDistanceIndex].point, vertex, fullPath.segments[shortestDistanceIndex].next.point);
+				if(currentAngle > otherAngle){
+					shortestDistance = currentDistance;
+					shortestDistanceIndex = currentSegment.index;
+				}
+			}
+			if(currentDistance < shortestDistance){
+				shortestDistance = currentDistance;
+				shortestDistanceIndex = currentSegment.index;
+			}
+		})
+		fullPath.insert(shortestDistanceIndex + 1, vertex);
+	}
+
+	function distanceToSegmentSquared(vertex, A, B) {
+		//find the (squared) distance to the nearest part of the line segment
+		//A and B are the endpoints of the segment.
+		//Vertex is the point that we're trying to get close to on the segment.
+		var segmentLengthSquared = distanceSquared(A, B);
+		if (segmentLengthSquared == 0){
+		  return distanceSquared(vertex, A);
+		}
+		var closestPointOnLine = ((vertex.x - A.x) * (B.x - A.x) + (vertex.y - A.y) * (B.y - A.y)) / segmentLengthSquared;
+		if (closestPointOnLine < 0){
+		  return distanceSquared(vertex, A);
+		}
+		if (closestPointOnLine > 1){
+		  return distanceSquared(vertex, B);
+		}
+		return distanceSquared(vertex, { x: A.x + closestPointOnLine * (B.x - A.x), y: A.y + closestPointOnLine * (B.y - A.y) });
+		}
+
+	function distanceSquared(A, B){
+		//helper function
+		return Math.pow(A.x - B.x, 2) + Math.pow(A.y - B.y, 2);
+	}
+
+	function getAngle(A, B, C){
+		//Get angle in radians
+		//B is the center point
+		//A and C form the angle.
+		var AB = Math.sqrt(Math.pow(B.x-A.x,2)+ Math.pow(B.y-A.y,2));
+		var BC = Math.sqrt(Math.pow(B.x-C.x,2)+ Math.pow(B.y-C.y,2));
+		var AC = Math.sqrt(Math.pow(C.x-A.x,2)+ Math.pow(C.y-A.y,2));
+		return Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB));
+	}
+
+
+	document.getElementById('solve').onclick = function(){
+		document.getElementById('solve').style.display = 'none';
+		document.getElementById('reset').style.display = 'block';
+	    fullPath.visible = true;
+	}
+
+	document.getElementById('reset').onclick = function(){
+		document.getElementById('reset').style.display = 'none';
+		document.getElementById('solve').style.display = 'block';
+		project.activeLayer.remove();
+		fullPath = new Path();
+	    fullPath.visible = false;
+		fullPath.strokeColor = 'white';
+		fullPath.closed = true;
+	}
+
+    </script>
+    <style type="text/css">
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .button {
+			display: none;
+            position: absolute;
+            left: 50%;
+            top: 85%;
+            color: #fff;
+            background-color: rgba(60,60,60,0.8);
+            padding: 15px;
+        }
+
+        body {
+            background: #000;
+            font-family:Helvetica,Arial;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" resize></canvas>
+    <button id="solve" class="button"> SOLVE </button>
+    <button id="reset" class="button"> RESET </button>
+</body>
+</html>

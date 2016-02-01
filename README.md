@@ -2,6 +2,9 @@
 
 This is a programming puzzle I did for a Curlate interview.
 
+A sample can be found here:
+http://judebusarello.com.s3-website-us-east-1.amazonaws.com/constellations.html
+
 
 Connect the Dots
 ==================
